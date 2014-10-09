@@ -1,0 +1,4 @@
+emacs
+=====
+
+My emcas setup
