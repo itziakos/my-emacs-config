@@ -1,4 +1,5 @@
-;; configuration
+
+;;;; package ---- configuration
 
 (require 'cl)				; common lisp goodies, loop
 
@@ -24,6 +25,7 @@
    magit
    flyspell
    smex
+   cython-mode
    ))
 
 ;; install new packages and init already installed packages
@@ -139,7 +141,9 @@
 ;; choose your own fonts, in a system dependant way
 (if (string-match "apple-darwin" system-configuration)
     (set-face-font 'default "Monaco-13")
-  (set-face-font 'default "Monospace-7"))
+  (if (string-match "w64" system-configuration)
+    (set-face-font 'default "consolas-12")
+    (set-face-font 'default "Monospace-7")))
 
 (line-number-mode 1)			; have line numbers and
 (column-number-mode 1)			; column numbers in the mode line
