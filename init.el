@@ -138,12 +138,38 @@
   ;; on mac, there's always a menu bar drown, don't have it empty
   (menu-bar-mode -1))
 
-;; choose your own fonts, in a system dependant way
-(if (string-match "apple-darwin" system-configuration)
-    (set-face-font 'default "Monaco-13")
-  (if (string-match "w64" system-configuration)
-    (set-face-font 'default "consolas-12")
-    (set-face-font 'default "Monospace-7")))
+;; choose your own fonts, in a system dependant way and
+;; based on the resolution
+(defun fontify-frame (frame)
+  (interactive)
+;;   (list current-prefix-arg
+;;	 (read-buffer "Buffer: " (current-buffer) t)))
+  (if window-system
+      (cond
+       ((> (x-display-pixel-width) 2000)
+	(if (string-match "apple-darwin" system-configuration)
+	    (set-face-font 'default "Monaco-16")
+	  (if (string-match "w64" system-configuration)
+	      (set-face-font 'default "consolas-16")
+	    (set-face-font 'default "Monospace-16"))))
+       ((> (x-display-pixel-width) 1600)
+	(if (string-match "apple-darwin" system-configuration)
+	    (set-face-font 'default "Monaco-11")
+	  (if (string-match "w64" system-configuration)
+	      (set-face-font 'default "consolas-11")
+	    (set-face-font 'default "Monospace-11"))))
+       ((> (x-display-pixel-width) 0)
+	(if (string-match "apple-darwin" system-configuration)
+	    (set-face-font 'default "Monaco-10")
+	  (if (string-match "w64" system-configuration)
+	      (set-face-font 'default "consolas-10")
+	    (set-face-font 'default "Monospace-10")))))))
+
+;; Fontify current frame
+(fontify-frame nil)
+
+;; Fontify any future frames
+(push 'fontify-frame after-make-frame-functions)
 
 (line-number-mode 1)			; have line numbers and
 (column-number-mode 1)			; column numbers in the mode line
