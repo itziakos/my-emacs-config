@@ -26,6 +26,7 @@
    flyspell
    smex
    cython-mode
+   plantuml-mode
    ))
 
 ;; install new packages and init already installed packages
@@ -34,6 +35,8 @@
 ;; jedi
 (add-hook 'python-mode-hook 'jedi:setup)
 (setq jedi:complete-on-dot t)
+(setq jedi:environment-root "default")  ; or any other name you like
+
 
 ;; no start up screen
 (setq inhibit-startup-screen t)
@@ -138,7 +141,7 @@
   ;; on mac, there's always a menu bar drown, don't have it empty
   (menu-bar-mode -1))
 
-;; choose your own fonts, in a system dependant way and
+;; Choose your own fonts, in a system dependant way and
 ;; based on the resolution
 (defun fontify-frame (frame)
   (interactive)
@@ -164,10 +167,8 @@
 	  (if (string-match "w64" system-configuration)
 	      (set-face-font 'default "consolas-10")
 	    (set-face-font 'default "Monospace-10")))))))
-
 ;; Fontify current frame
 (fontify-frame nil)
-
 ;; Fontify any future frames
 (push 'fontify-frame after-make-frame-functions)
 
