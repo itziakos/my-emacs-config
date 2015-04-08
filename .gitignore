@@ -1,6 +1,8 @@
 .ido.last
 .smex-items
+smex-items
 ac-comphist.dat
 auto-save-list/
 el-get/
 url/
+.python-environments/
