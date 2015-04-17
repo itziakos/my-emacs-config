@@ -141,32 +141,24 @@
   ;; on mac, there's always a menu bar drown, don't have it empty
   (menu-bar-mode -1))
 
-;; Choose your own fonts, in a system dependant way and
-;; based on the resolution
-(defun fontify-frame (frame)
-  (interactive)
-;;   (list current-prefix-arg
-;;	 (read-buffer "Buffer: " (current-buffer) t)))
-  (if window-system
-      (cond
-       ((> (x-display-pixel-width) 2000)
-	(if (string-match "apple-darwin" system-configuration)
-	    (set-face-font 'default "Monaco-16")
-	  (if (string-match "w64" system-configuration)
-	      (set-face-font 'default "consolas-16")
-	    (set-face-font 'default "Monospace-16"))))
-       ((> (x-display-pixel-width) 1600)
-	(if (string-match "apple-darwin" system-configuration)
-	    (set-face-font 'default "Monaco-11")
-	  (if (string-match "w64" system-configuration)
-	      (set-face-font 'default "consolas-11")
-	    (set-face-font 'default "Monospace-11"))))
-       ((> (x-display-pixel-width) 0)
-	(if (string-match "apple-darwin" system-configuration)
-	    (set-face-font 'default "Monaco-10")
-	  (if (string-match "w64" system-configuration)
-	      (set-face-font 'default "consolas-10")
-	    (set-face-font 'default "Monospace-10")))))))
+;; Choose the fonts, in a system dependant way and based on the resolution
+(defun fontify-frame (&optional width)
+  (interactive "p")
+  (let ((os system-configuration)
+	(target (if width width (nth 3 (car (frame-monitor-attributes))))))
+    (if window-system
+	(let ((apple-os (string-match "apple-darwin" os))
+	      (windows-os (string-match "w64" os)))
+	  (let ((selected-font
+		 (cond
+		  ((> target 2000)
+		   (if apple-os "Monospace-16" (if windows-os "consolas-16" "Monospace-16")))
+		  ((> target 1200)
+		   (if apple-os "Monospace-14" (if windows-os "consolas-14" "Monospace-14")))
+		  ((> target -1)
+		   (if apple-os "Monospace-11" (if windows-os "consolas-11" "Monospace-11"))))))
+	    (set-frame-parameter nil 'font selected-font))))))
+
 ;; Fontify current frame
 (fontify-frame nil)
 ;; Fontify any future frames
