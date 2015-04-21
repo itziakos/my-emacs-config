@@ -183,7 +183,6 @@
  '(blink-cursor-mode nil)
  '(current-language-environment "Greek")
  '(custom-enabled-themes (quote (misterioso)))
- '(ede-project-directories (quote ("c:/Users/itziakos/AppData/Roaming/.emacs.d"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
