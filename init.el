@@ -27,6 +27,7 @@
    smex
    cython-mode
    plantuml-mode
+   monky
    ))
 
 ;; install new packages and init already installed packages
@@ -182,7 +183,6 @@
    ["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf" "#eeeeec"])
  '(blink-cursor-mode nil)
  '(current-language-environment "Greek")
- '(custom-enabled-themes (quote (misterioso)))
  '(ede-project-directories (quote ("c:/Users/itziakos/AppData/Roaming/.emacs.d"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
