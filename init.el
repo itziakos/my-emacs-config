@@ -183,7 +183,9 @@
    ["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf" "#eeeeec"])
  '(blink-cursor-mode nil)
  '(current-language-environment "Greek")
- '(ede-project-directories (quote ("c:/Users/itziakos/AppData/Roaming/.emacs.d"))))
+ '(ede-project-directories
+   (quote
+    ("c:/Users/itziakos/AppData/Roaming/.emacs.d"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
