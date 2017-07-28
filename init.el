@@ -14,6 +14,10 @@
 
 (require 'el-get)
 
+;; intall log4j from the elpa repo
+(el-get-bundle elpa:jtags)
+(el-get-bundle elpa:log4j-mode)
+
 ;; Set up packages
 (setq
  my:el-get-packages
