@@ -42,6 +42,7 @@
 (add-hook 'python-mode-hook 'jedi:setup)
 (setq jedi:complete-on-dot t)
 (setq jedi:environment-root "default")  ; or any other name you like
+(jedi:install-server)  ; or any other name you like
 
 
 ;; no start up screen
