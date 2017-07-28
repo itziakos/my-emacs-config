@@ -32,6 +32,7 @@
    cython-mode
    plantuml-mode
    monky
+   yaml-mode
    ))
 
 ;; install new packages and init already installed packages
