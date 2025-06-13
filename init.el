@@ -1,71 +1,68 @@
+;; Temporarily increase GC threshold during startup
+(add-hook 'emacs-startup-hook
+          (lambda () (setq gc-cons-threshold (* 100 1024 1024)))) ; 100 MB for interactive use
 
-;;;; package ---- configuration
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
+(package-initialize)
 
-(require 'cl)				; common lisp goodies, loop
+;; Make sure that use-package is always available
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+;; use-package should install packages
+(setq use-package-always-ensure t) ;
 
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-
-(unless (require 'el-get nil t)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://github.com/dimitri/el-get/raw/master/el-get-install.el")
-    (end-of-buffer)
-    (eval-print-last-sexp)))
-
-(require 'el-get)
-
-;; intall log4j from the elpa repo
-(el-get-bundle elpa:jtags)
-(el-get-bundle elpa:log4j-mode)
-
-;; Set up packages
-(setq
- my:el-get-packages
- '(el-get
-   flycheck
-   zencoding-mode
-   jedi
-   pydoc-info
-   magit
-   flyspell
-   smex
-   cython-mode
-   plantuml-mode
-   monky
-   yaml-mode
-   ))
-
-;; install new packages and init already installed packages
-(el-get 'sync my:el-get-packages)
-
-;; jedi
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:complete-on-dot t)
-(setq jedi:environment-root "default")  ; or any other name you like
-(jedi:install-server)  ; or any other name you like
-
-
-;; no start up screen
-(setq inhibit-startup-screen t)
-
-(setq smex-save-file "~/.emacs.d/.smex-items")
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
-
-;; Setup ido mode
-(require 'ido)
-(ido-mode t)
-(setq ido-save-directory-list-file "~/.emacs.d/.ido.last")
-(setq ido-enable-flex-matching t)
-(setq ido-use-filename-at-point 'guess)
-(setq ido-show-dot-for-dired t)
-(setq ido-default-buffer-method 'selected-window)
-;; have vertical ido completion lists
-;;(setq ido-decorations
-;;      '("\n-> " "" "\n   " "\n   ..." "[" "]"
-;;	" [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]"))
-
-;; C-x C-j opens dired with the cursor right on the file you're editing
+;; Add packages
+(use-package jtags)
+(use-package log4j-mode)
+(use-package yasnippet
+  :ensure t
+  :init (yas-global-mode 1)
+  :config
+  (setq yas-snippet-dirs '("~/.emacs.d/snippets")))
+(use-package emmet-mode)
+(use-package magit
+  :bind (("C-x g" . magit-status)
+         ("C-x M-g" . magit-dispatch-popup)))
+(use-package smex
+  :bind (("M-x" . smex)
+	 ("M-X" . smex-major-mode-commands))
+  :config
+  (setq smex-save-file "~/.emacs.d/.smex-items"))
+(use-package cython-mode)
+(use-package plantuml-mode)
+(use-package monky)
+(use-package yaml-mode)
+(use-package ido
+  :init (ido-mode t) ; Init code runs before package is loaded
+  :config
+  (setq ido-save-directory-list-file "~/.emacs.d/.ido.last")
+  (setq ido-enable-flex-matching t)
+  (setq ido-use-filename-at-point 'guess)
+  (setq ido-show-dot-for-dired t)
+  (setq ido-default-buffer-method 'selected-window))
+(use-package flyspell
+  :hook ((text-mode . turn-on-flyspell) ; Load flyspell on text-mode
+         (python-mode . flyspell-prog-mode)) ; And python-mode
+  :config
+  (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
+  (setq ispell-program-name "aspell")
+  (setq ispell-dictionary "british")
+  (setq ispell-list-command "--list"))
+(use-package flycheck
+  :init (global-flycheck-mode) ; This will run global-flycheck-mode on startup, but flycheck itself is still loaded
+  :config
+  (setq flycheck-check-syntax-automatically '(save))
+  (setq flycheck-highlight-mode 'lines))
+(use-package term
+  :commands (term ansi-term) ; Defer loading until one of these commands is called
+  :config
+  (define-key term-raw-map (kbd "C-'") 'term-line-mode)
+  (define-key term-mode-map (kbd "C-'") 'term-char-mode))
 (require 'dired-x)
 
 ;; default key to switch buffer is C-x b, but that's not easy enough
@@ -77,25 +74,14 @@
 (global-set-key (kbd "C-x C-c") 'ido-switch-buffer)
 (global-set-key (kbd "C-x B") 'ibuffer)
 
+;; no start up screen
+(setq inhibit-startup-screen t)
+
 ;; copy/paste with C-c and C-v and C-x, check out C-RET too
 (cua-mode)
 
 ;; Use the clipboard, pretty please, so that copy/paste "works"
 (setq x-select-enable-clipboard t)
-
-;; flyspell setup
-(add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
-(setq ispell-program-name "aspell")
-(setq ispell-dictionary "british")
-(require 'flyspell)
-(add-hook 'text-mode-hook 'turn-on-flyspell)
-(add-hook 'python-mode-hook 'flyspell-prog-mode)
-(setq ispell-list-command "--list")
-
-;; flycheck setup
-(add-hook 'after-init-hook 'global-flycheck-mode)
-(setq flycheck-check-syntax-automatically '(save))
-(setq flycheck-highlight-mode 'lines)
 
 ;; setup tabs
 (setq c-basic-indent 2)
@@ -107,17 +93,6 @@
 ;; instead.
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
-;; If you do use M-x term, you will notice there's line mode that acts like
-;; emacs buffers, and there's the default char mode that will send your
-;; input char-by-char, so that curses application see each of your key
-;; strokes.
-;;
-;; The default way to toggle between them is C-c C-j and C-c C-k, let's
-;; better use just one key to do the same.
-(require 'term)
-(define-key term-raw-map  (kbd "C-'") 'term-line-mode)
-(define-key term-mode-map (kbd "C-'") 'term-char-mode)
 
 ;; Navigate windows with M-<arrows>
 (windmove-default-keybindings 'meta)
@@ -175,10 +150,19 @@
 (column-number-mode 1)			; column numbers in the mode line
 
 (global-hl-line-mode)			; highlight current line
-(global-linum-mode 1)			; add line numbers on the left
+(global-display-line-numbers-mode 1)	; add line numbers on the left
 
-;; Remove trailing whitespace on save
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+(defun my-delete-trailing-whitespace-except-diff-modes ()
+  "Delete trailing whitespace, but not in diff-related modes."
+  (unless (or (eq major-mode 'diff-mode)
+              (eq major-mode 'ediff-mode)
+              ;; Add other diff-like modes if you use them, e.g., 'vc-diff-mode
+              )
+    (delete-trailing-whitespace)))
+
+;; Add the new function to the hook
+(add-hook 'before-save-hook 'my-delete-trailing-whitespace-except-diff-modes)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -186,12 +170,11 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
-   ["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf" "#eeeeec"])
+   ["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf"
+    "#eeeeec"])
  '(blink-cursor-mode nil)
  '(current-language-environment "Greek")
- '(ede-project-directories
-   (quote
-    ("c:/Users/itziakos/AppData/Roaming/.emacs.d"))))
+ '(package-selected-packages nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
